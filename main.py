@@ -3,9 +3,11 @@ import sys
 
 def main():
     LAYER_KEYWORD = 'LAYER:'
-    LAYER_HEIGHT_FOR_STEPS = 25
+    # TODO safety measures for changing this.
+    layer_height_for_steps = int(sys.argv[2])
     filename = sys.argv[1]
-    retraction_step_at = 0
+    initial_retraction_distance = int(sys.argv[3])
+    retraction_distance_at = initial_retraction_distance
 
     gcode_source = open(filename, "r")
     gcode_target = open(filename + ".mod", "w+")
@@ -18,9 +20,9 @@ def main():
         if LAYER_KEYWORD in line:
             current_layer = get_current_layer(LAYER_KEYWORD, line)
             print('LAYER: ' + str(current_layer))
-            # We increment retraction step
-            if current_layer != 0 and current_layer % LAYER_HEIGHT_FOR_STEPS == 0:
-                retraction_step_at += 1
+            # We increment retraction distance
+            if current_layer != 0 and current_layer % layer_height_for_steps == 0:
+                retraction_distance_at += 1
 
         if current_layer is not None:
 
@@ -28,9 +30,9 @@ def main():
                 # Changing the retraction setting derived from the original
                 if line.startswith('G1 ') and 'F' in line and 'E' in line and 'X' not in line and 'Y' not in line:
                     new_extruder_at = get_E_step(line)
-                    if new_extruder_at > 0 and new_extruder_at < currently_extruder_at:
-                        retracted_extruder_at = round(currently_extruder_at - retraction_step_at, 5)
-                        print('RETRACT: ' + str(new_extruder_at) + ' changed to ' + str(retracted_extruder_at) + ' with step ' + str(retraction_step_at) + ' in ' + line + ' at layer ' + str(current_layer))
+                    if 0 < new_extruder_at < currently_extruder_at:
+                        retracted_extruder_at = round(currently_extruder_at - retraction_distance_at, 5)
+                        print('RETRACT: ' + str(new_extruder_at) + ' changed to ' + str(retracted_extruder_at) + ' with retraction distance ' + str(retraction_distance_at) + 'mm in ' + line + ' at layer ' + str(current_layer))
                         line = line.replace(str(new_extruder_at), str(retracted_extruder_at))
 
             if line.startswith('G1 ') and 'X' in line and 'Y' in line and 'E' in line:
@@ -40,9 +42,9 @@ def main():
         gcode_target.writelines(line)
 
 
-def get_current_layer(LAYER_KEYWORD, line):
-    position = line.find(LAYER_KEYWORD)
-    position += len(LAYER_KEYWORD)
+def get_current_layer(layer_keyword, line):
+    position = line.find(layer_keyword)
+    position += len(layer_keyword)
     current_layer = int(line[position:])
     return current_layer
 
