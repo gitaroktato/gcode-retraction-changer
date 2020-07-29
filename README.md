@@ -1,4 +1,4 @@
-# gcode R etraction Changer
+# gcode Retraction Changer
 Changes retraction distance from a specific layer gradually, because Cura is unable to do so.
 The goal is to save material during stringing tets by doing only a single test.
 
