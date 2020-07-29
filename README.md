@@ -64,7 +64,7 @@ These are the lines I've identified as retraction commands in the `.gcode`
 
 ![retraction_diff](images/retraction_change.png)
 
-# Results
+# gcode In Action
 After running the `.gcode` file in my Ender 3 I realized that the ideal setting is either 2 or 3mm within just 15 minutes!!!
 
 ![stringing](images/IMG_20200729_165354.jpg)
