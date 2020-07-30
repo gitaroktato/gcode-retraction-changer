@@ -78,3 +78,12 @@ After running the `.gcode` file in my Ender 3 I realized that the ideal setting 
 
 ![stringing](images/IMG_20200729_165354.jpg)
 
+## Changing retraction speed
+After figuring out the ideal retraction distance you can even change the retraction speed for a given `.gcode`.
+I've configured the initial retraction speed of 25mm/s and added 5mm/s increase in every 25 layer. 
+```shell script
+python ./main.py -m speed -f tests/CE3_stringing_2mm_at_45mms_original.gcode -l 25 -s 1500 -t 300
+```
+The results showed that everything above 30mm/s should be fine.
+
+![stringing](images/IMG_20200730_125529.jpg)
