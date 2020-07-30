@@ -1,5 +1,5 @@
 # gcode Retraction Changer
-Changes retraction distance from a specific layer gradually, because Cura is unable to do so.
+Changes retraction distance and speed from a specific layer gradually, because Cura is unable to do so.
 The goal is to save material during stringing tets by doing only a single test.
 
 The STL file I've used for the custom script:
@@ -14,8 +14,14 @@ https://www.youtube.com/watch?v=xzQjtWhg9VE
 https://www.youtube.com/watch?v=3yIebnVjADM
 
 # Running the code
+Changing retraction distance, starting with 0 with one step in every 25 layer
 ```shell script
-python ./main.py GCODE_FILE_NAME LAYER_HEIGHT INITAL_RETRACTION
+python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0
+```
+
+Changing retraction speed from 25mm/s by 5mm/s in every 25 layer
+```shell script
+python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 1500 -t 300
 ```
 
 Specify the layer height you would like to use for changing the retraction distance in the second parameter.
@@ -32,7 +38,7 @@ I TAKE ABSOLUTELY NO WARRANTY FOR RUINING YOUR PRINTER!
 Let's say I want to do a test with the initial retraction distance of 0 and chagne it on every 5mm.
 My layer height is 0.2, so I run the following command:
 ```shell script
-python main.py tests/CE3_stringing.gcode 25 0
+python main.py -f tests/CE3_stringing.gcode -m distance -l 25 -d 0
 ```
 
 The script will log out every retraction modification, where it was identifiable in the `.gcode` file.
