@@ -1,0 +1,4 @@
+- [ ] Change README
+- [ ] Add speed variable
+- [ ] Test speed variable with Cura 4.6
+- [ ] Test speed in real life

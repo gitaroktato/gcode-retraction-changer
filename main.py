@@ -1,20 +1,90 @@
 import sys
+import argparse
+
+
+def init_argparse():
+    parser = argparse.ArgumentParser(
+       description="Change retraction speed or retraction distance gradually by a specific layer height in gcode files"
+    )
+    parser.add_argument('-m', '--mode', required=True, choices=['speed', 'distance'],
+                    help="defines the type of retraction change to apply to the gcode")
+
+    parser.add_argument('-s', '--source', required=True, type=str,
+                    help="defines the source gcode file location")
+
+    parser.add_argument('-l', '--layer_step', required=True, type=int,
+                    help="defines the layer step")
+
+    parser.add_argument('-d', '--initial_retraction_distance', type=int,
+                    help="defines the initial_retraction_distance")
+
+    return parser.parse_args()
 
 
 def main():
     # TODO safety measures for changing this.
     # TODO changing the argument parsing mechanism
-    filename = sys.argv[1]
-    layer_distance = int(sys.argv[2])
-    initial_retraction_distance = int(sys.argv[3])
+    args = init_argparse()
+    gcode_source = open(args.source, "r")
+    gcode_target = open(args.source + ".mod", "w+")
 
-    gcode_source = open(filename, "r")
-    gcode_target = open(filename + ".mod", "w+")
+    if 'distance' == args.mode:
+        change_retraction_distance(gcode_source=gcode_source, gcode_target=gcode_target,
+                                   initial_retraction_distance=args.initial_retraction_distance,
+                                   layer_distance=args.layer_step)
 
+    elif 'speed' == args.mode:
+        change_retraction_speed(gcode_source=gcode_source, gcode_target=gcode_target,
+                                initial_retraction_speed=1200, retraction_speed_steps=0,
+                                layer_distance=args.layer_step)
+
+
+def change_retraction_speed(gcode_source=None,
+                            gcode_target=None,
+                            initial_retraction_speed=None,
+                            retraction_speed_steps=None,
+                            layer_distance=None):
+    """
+    Changing retraction speed for a specific source file. User has to define the initial distance
+    and the layer distance, which specifies the number of layers between steps.
+    """
+    current_retraction_speed_at = initial_retraction_speed
+    current_layer_at = None
+    currently_extruder_at = None
+    lines = gcode_source.readlines()
+    for line in lines:
+
+        if get_current_layer(line) is not None:
+            current_layer_at = get_current_layer(line)
+            log_layer_line(current_layer_at)
+            # We increment retraction distance if required
+            if not_initial_layer(current_layer_at) and have_to_change_variable_at_layer(current_layer_at,
+                                                                                        layer_distance):
+                current_retraction_speed_at += retraction_speed_steps
+
+        if current_layer_at is not None and currently_extruder_at is not None:
+            # Changing the retraction setting derived from the original
+            if is_changing_only_extruder(line):
+                feed_rate = get_feed_rate(line)
+                line = line.replace(str(current_retraction_speed_at), str(feed_rate))
+
+        if is_printing(line):
+            currently_extruder_at = get_extruder_position(line)
+
+        gcode_target.writelines(line)
+
+
+def change_retraction_distance(gcode_source=None,
+                               gcode_target=None,
+                               initial_retraction_distance=None,
+                               layer_distance=None):
+    """
+    Changing retraction distance for a specific source file. User has to define the initial distance
+    and the layer distance, which specifies the number of layers between steps.
+    """
     current_retraction_distance_at = initial_retraction_distance
     current_layer_at = None
     currently_extruder_at = None
-
     lines = gcode_source.readlines()
     for line in lines:
 
@@ -34,8 +104,11 @@ def main():
                 if is_not_negative_extrusion(new_extruder_at) and is_retraction(new_extruder_at, currently_extruder_at):
                     # We recalculate the extrusion value
                     retracted_extruder_at = round(currently_extruder_at - current_retraction_distance_at, 5)
-                    log_retraction_change(new_extruder_at, retracted_extruder_at, current_retraction_distance_at,
-                                          line, current_layer_at)
+                    log_retraction_distance_change(new_extruder_at=new_extruder_at,
+                                                   retracted_extruder_at=retracted_extruder_at,
+                                                   current_retraction_distance_at=current_retraction_distance_at,
+                                                   current_layer_at=current_layer_at,
+                                                   line=line)
                     line = line.replace(str(new_extruder_at), str(retracted_extruder_at))
 
         if is_printing(line):
@@ -44,15 +117,18 @@ def main():
         gcode_target.writelines(line)
 
 
-def log_retraction_change(new_extruder_at, retracted_extruder_at, current_retraction_distance_at,
-                          line, current_layer_at):
-    print('RETRACT: ' + str(new_extruder_at) + ' changed to ' + str(
-        retracted_extruder_at) + ' with retraction distance ' + str(
-        current_retraction_distance_at) + 'mm in ' + line + ' at layer ' + str(current_layer_at))
+def log_retraction_distance_change(new_extruder_at=None,
+                                   retracted_extruder_at=None,
+                                   current_retraction_distance_at=None,
+                                   current_layer_at=None,
+                                   line=None):
+    print(f'RETRACT: {new_extruder_at} changed to {retracted_extruder_at}'
+          f' with retraction distance {current_retraction_distance_at}mm'
+          f' in line {line} at layer {current_layer_at}')
 
 
 def log_layer_line(current_layer):
-    print('LAYER:' + str(current_layer))
+    print(f'LAYER:{current_layer}')
 
 
 def get_current_layer(line, layer_keyword='LAYER:'):
@@ -115,6 +191,20 @@ def get_extruder_position(line):
             position = token.find('E')
             position += 1
             return float(token[position:])
+    return None
+
+
+def get_feed_rate(line):
+    """
+    Get the current feed rate from the line. Example for 1200:
+    G1 F1200 X133.539 Y103.864 E0.02712
+    """
+    tokens = line.split()
+    for token in tokens:
+        if 'F' in token:
+            position = token.find('F')
+            position += 1
+            return int(token[position:])
     return None
 
 
