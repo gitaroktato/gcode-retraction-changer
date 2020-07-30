@@ -26,7 +26,7 @@ Specify the initial retraction value. To start with no retraction at all, set th
 # Results
 The modified `.gcode` file will be named as `GCODE_FILE_NAME.gcode.mod`. Make sure you compare this with the original.
 Also, make sure you're observing the printer all the time during the execution!
-I TAKE ABSOLUTELY NO WARRANTY FOR IF YOU RUIN YOUR PRINTER!
+I TAKE ABSOLUTELY NO WARRANTY FOR RUINING YOUR PRINTER!
 
 # Example
 Let's say I want to do a test with the initial retraction distance of 0 and chagne it on every 5mm.
