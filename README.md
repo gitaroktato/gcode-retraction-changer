@@ -1,4 +1,6 @@
 # gcode Retraction Changer
+**Don't forget to star the repository if you find the application useful. This will help others finding it as well**
+
 Changes retraction distance and speed from a specific layer gradually, because Cura is unable to do so.
 The goal is to save material during stringing tets by doing only a single test.
 
