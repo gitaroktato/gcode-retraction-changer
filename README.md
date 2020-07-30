@@ -5,7 +5,7 @@ The goal is to save material during stringing tets by doing only a single test.
 The STL file I've used for the custom script:
 https://www.thingiverse.com/thing:2450004
 
-Tested only on Ender 3 with my own understanding of `gcode` syntax.
+Tested only on Ender 3 and Cura 4.6.1 with my own understanding of `gcode` syntax.
 
 # Prerequisites
 Make sure you calibrate your extruder by following one of these tutorials!
