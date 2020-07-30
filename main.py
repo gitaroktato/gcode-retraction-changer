@@ -9,14 +9,20 @@ def init_argparse():
     parser.add_argument('-m', '--mode', required=True, choices=['speed', 'distance'],
                     help="defines the type of retraction change to apply to the gcode")
 
-    parser.add_argument('-s', '--source', required=True, type=str,
+    parser.add_argument('-f', '--file', required=True, type=str,
                     help="defines the source gcode file location")
 
     parser.add_argument('-l', '--layer_step', required=True, type=int,
                     help="defines the layer step")
 
     parser.add_argument('-d', '--initial_retraction_distance', type=int,
-                    help="defines the initial_retraction_distance")
+                    help="defines the initial retraction distance")
+
+    parser.add_argument('-s', '--initial_retraction_speed', type=int,
+                    help="defines the initial retraction speed")
+
+    parser.add_argument('-t', '--retraction_speed_step', type=int,
+                    help="defines the retraction speed step")
 
     return parser.parse_args()
 
@@ -25,8 +31,8 @@ def main():
     # TODO safety measures for changing this.
     # TODO changing the argument parsing mechanism
     args = init_argparse()
-    gcode_source = open(args.source, "r")
-    gcode_target = open(args.source + ".mod", "w+")
+    gcode_source = open(args.file, "r")
+    gcode_target = open(args.file + ".mod", "w+")
 
     if 'distance' == args.mode:
         change_retraction_distance(gcode_source=gcode_source, gcode_target=gcode_target,
@@ -35,7 +41,8 @@ def main():
 
     elif 'speed' == args.mode:
         change_retraction_speed(gcode_source=gcode_source, gcode_target=gcode_target,
-                                initial_retraction_speed=1200, retraction_speed_steps=0,
+                                initial_retraction_speed=args.initial_retraction_speed,
+                                retraction_speed_steps=args.retraction_speed_step,
                                 layer_distance=args.layer_step)
 
 
@@ -66,7 +73,10 @@ def change_retraction_speed(gcode_source=None,
             # Changing the retraction setting derived from the original
             if is_changing_only_extruder(line):
                 feed_rate = get_feed_rate(line)
-                line = line.replace(str(current_retraction_speed_at), str(feed_rate))
+                log_retraction_speed_change(current_retraction_speed_at=current_retraction_speed_at,
+                                            feed_rate=feed_rate,
+                                            line=line)
+                line = line.replace(str(feed_rate), str(current_retraction_speed_at))
 
         if is_printing(line):
             currently_extruder_at = get_extruder_position(line)
@@ -115,6 +125,10 @@ def change_retraction_distance(gcode_source=None,
             currently_extruder_at = get_extruder_position(line)
 
         gcode_target.writelines(line)
+
+
+def log_retraction_speed_change(current_retraction_speed_at=None, feed_rate=None, line=None):
+    print(f'RETRACT: Changing speed from {feed_rate} => {current_retraction_speed_at} in line {line}')
 
 
 def log_retraction_distance_change(new_extruder_at=None,
