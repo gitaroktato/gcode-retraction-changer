@@ -18,6 +18,9 @@ def init_argparse():
     parser.add_argument('-d', '--initial_retraction_distance', type=int,
                     help="defines the initial retraction distance")
 
+    parser.add_argument('-ds', '--retraction_distance_step', type=float, default=1.0,
+                    help="defines the retraction speed step")
+
     parser.add_argument('-s', '--initial_retraction_speed', type=int,
                     help="defines the initial retraction speed")
 
@@ -37,6 +40,7 @@ def main():
     if 'distance' == args.mode:
         change_retraction_distance(gcode_source=gcode_source, gcode_target=gcode_target,
                                    initial_retraction_distance=args.initial_retraction_distance,
+                                   retraction_distance_step=args.retraction_distance_step,
                                    layer_distance=args.layer_step)
 
     elif 'speed' == args.mode:
@@ -87,6 +91,7 @@ def change_retraction_speed(gcode_source=None,
 def change_retraction_distance(gcode_source=None,
                                gcode_target=None,
                                initial_retraction_distance=None,
+                               retraction_distance_step=None,
                                layer_distance=None):
     """
     Changing retraction distance for a specific source file. User has to define the initial distance
@@ -103,7 +108,7 @@ def change_retraction_distance(gcode_source=None,
             log_layer_line(current_layer_at)
             # We increment retraction distance if required
             if not_initial_layer(current_layer_at) and have_to_change_variable_at_layer(current_layer_at, layer_distance):
-                current_retraction_distance_at += 1
+                current_retraction_distance_at += retraction_distance_step
 
         if current_layer_at is not None and currently_extruder_at is not None:
             # Changing the retraction setting derived from the original
