@@ -1,6 +1,7 @@
 import unittest
 import main
 
+
 class TestMain(unittest.TestCase):
 
     def test_get_current_layer_in_non_layer_line(self):
