@@ -7,6 +7,7 @@ The goal is to save material during stringing tets by doing only a single test. 
 
 ## Supported Cura versions
 - 4.6.1
+- 4.8.0
 
 The STL file I've used for the custom script:
 https://www.thingiverse.com/thing:2450004

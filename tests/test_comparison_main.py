@@ -1,8 +1,10 @@
+from parameterized import parameterized
 import unittest
 import main
 
-GCODE_FILE = 'tests/CE3_stringing.gcode'
-GCODE_FILE_MODIFIED = 'tests/CE3_stringing.gcode' + ".mod"
+TEST_BASEDIR = "tests"
+GCODE_FILE = 'CE3_stringing.gcode'
+GCODE_FILE_MODIFIED = 'CE3_stringing.gcode' + ".mod"
 
 
 def filter_retraction_speed_differing(lines):
@@ -14,12 +16,22 @@ def filter_retraction_speed_differing(lines):
     return lines
 
 
-class ComparisonTestMain(unittest.TestCase):
+def get_file_path(cura_version: str, file_name: str):
+    """
+    Get the file path based on cura version - returns path by convention.
+    """
+    return "%s/%s/%s" % (TEST_BASEDIR, cura_version, file_name)
 
-    def test_comparing_generated_file_with_retraction_distance(self):
+
+class ComparisonTestMain(unittest.TestCase):
+    @parameterized.expand([
+        "4.6.1",
+        "4.8.0"
+    ])
+    def test_comparing_generated_file_with_retraction_distance(self, cura_version: str):
         # Executing retraction distance change
-        gcode_source = open(GCODE_FILE, "r")
-        gcode_target = open(GCODE_FILE_MODIFIED, "w+")
+        gcode_source = open(get_file_path(cura_version, GCODE_FILE), "r")
+        gcode_target = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "w+")
         main.change_retraction_distance(
             gcode_source,
             gcode_target,
@@ -31,18 +43,22 @@ class ComparisonTestMain(unittest.TestCase):
         gcode_source.close()
         gcode_target.close()
         # Verifying
-        gcode_result = open(GCODE_FILE_MODIFIED, "r")
-        gcode_expected = open('tests/CE3_stringing_retract_0_to_4.gcode', "r")
+        gcode_result = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "r")
+        gcode_expected = open(get_file_path(cura_version, 'CE3_stringing_retract_0_to_4.gcode'), "r")
         lines_result = gcode_result.readlines()
         lines_expected = gcode_expected.readlines()
         self.assertEqual(lines_expected, lines_result, " -- lines should match")
         gcode_expected.close()
         gcode_result.close()
 
-    def test_comparing_generated_file_with_identity_operation_on_distance(self):
+    @parameterized.expand([
+        "4.6.1",
+        "4.8.0"
+    ])
+    def test_comparing_generated_file_with_identity_operation_on_distance(self, cura_version: str):
         # Executing retraction distance change
-        gcode_source = open(GCODE_FILE, "r")
-        gcode_target = open(GCODE_FILE_MODIFIED, "w+")
+        gcode_source = open(get_file_path(cura_version, GCODE_FILE), "r")
+        gcode_target = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "w+")
         main.change_retraction_distance(
             gcode_source,
             gcode_target,
@@ -54,18 +70,22 @@ class ComparisonTestMain(unittest.TestCase):
         gcode_source.close()
         gcode_target.close()
         # Verifying
-        gcode_result = open(GCODE_FILE_MODIFIED, "r")
-        gcode_expected = open(GCODE_FILE, "r")
+        gcode_result = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "r")
+        gcode_expected = open(get_file_path(cura_version, GCODE_FILE), "r")
         lines_result = gcode_result.readlines()
         lines_expected = gcode_expected.readlines()
         self.assertEqual(lines_expected, lines_result, " -- lines should match")
         gcode_expected.close()
         gcode_result.close()
 
-    def test_comparing_generated_file_with_retraction_speed(self):
+    @parameterized.expand([
+        "4.6.1",
+        "4.8.0"
+    ])
+    def test_comparing_generated_file_with_retraction_speed(self, cura_version: str):
         # Executing retraction distance change
-        gcode_source = open(GCODE_FILE, "r")
-        gcode_target = open(GCODE_FILE_MODIFIED, "w+")
+        gcode_source = open(get_file_path(cura_version, GCODE_FILE), "r")
+        gcode_target = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "w+")
         main.change_retraction_speed(
             gcode_source,
             gcode_target,
@@ -77,18 +97,22 @@ class ComparisonTestMain(unittest.TestCase):
         gcode_source.close()
         gcode_target.close()
         # Verifying
-        gcode_result = open(GCODE_FILE_MODIFIED, "r")
-        gcode_expected = open('tests/CE3_stringing_retract_2mm_speed_25-45.gcode', "r")
+        gcode_result = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "r")
+        gcode_expected = open(get_file_path(cura_version, 'CE3_stringing_retract_2mm_speed_25-45.gcode'), "r")
         lines_result = gcode_result.readlines()
         lines_expected = gcode_expected.readlines()
         self.assertEqual(lines_expected, lines_result, " -- lines should match")
         gcode_expected.close()
         gcode_result.close()
 
-    def test_comparing_generated_file_with_identity_operation_on_speed(self):
+    @parameterized.expand([
+        "4.6.1",
+        "4.8.0"
+    ])
+    def test_comparing_generated_file_with_identity_operation_on_speed(self, cura_version: str):
         # Executing retraction distance change
-        gcode_source = open(GCODE_FILE, "r")
-        gcode_target = open(GCODE_FILE_MODIFIED, "w+")
+        gcode_source = open(get_file_path(cura_version, GCODE_FILE), "r")
+        gcode_target = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "w+")
         main.change_retraction_speed(
             gcode_source,
             gcode_target,
@@ -100,8 +124,8 @@ class ComparisonTestMain(unittest.TestCase):
         gcode_source.close()
         gcode_target.close()
         # Verifying
-        gcode_result = open(GCODE_FILE_MODIFIED, "r")
-        gcode_expected = open(GCODE_FILE, "r")
+        gcode_result = open(get_file_path(cura_version, GCODE_FILE_MODIFIED), "r")
+        gcode_expected = open(get_file_path(cura_version, GCODE_FILE), "r")
         lines_result = gcode_result.readlines()
         lines_expected = gcode_expected.readlines()
         lines_result = filter_retraction_speed_differing(lines_result)
