@@ -32,7 +32,8 @@ Changing retraction distance with a defined step distance, starting with 0 and i
 python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0 -ds 0.5
 ```
 
-Changing retraction speed from 25mm/s by 5mm/s in every 25 layer
+Changing retraction speed from 25mm/s by 5mm/s in every 25 layer.
+Note: the given values are in milliseconds, so you have to multiply by 60.
 
 ```shell script
 python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 1500 -t 300
@@ -51,7 +52,7 @@ I TAKE ABSOLUTELY NO WARRANTY FOR RUINING YOUR PRINTER!
 
 # Example
 
-Let's say I want to do a test with the initial retraction distance of 0 and chagne it on every 5mm.
+Let's say I want to do a test with the initial retraction distance of 0 and change it on every 5mm.
 My layer height is 0.2, so I run the following command:
 
 ```shell script
