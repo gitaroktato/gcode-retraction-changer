@@ -131,3 +131,6 @@ dmypy.json
 # PyCharm related
 .idea
 *.iml
+
+# Generated GCODE files
+**.gcode.mod
