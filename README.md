@@ -36,7 +36,7 @@ Changing retraction distance with a defined step distance, starting with 0 and i
 python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0 -ds 0.5
 ```
 
-Changing retraction speed from 25mm/s by 5mm/s in every 25 layer. **Note:** the given values are in mm / min [in Gcode](https://marlinfw.org/docs/gcode/G000-G001.html), so have to be multiplied by 60.
+Changing retraction speed from 25mm/s by 5mm/s in every 25 layer. **Note:** the given values are in mm/min [in Gcode](https://marlinfw.org/docs/gcode/G000-G001.html), so have to be multiplied by 60.
 
 ```shell script
 python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 1500 -t 300
