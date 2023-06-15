@@ -15,7 +15,7 @@ def init_argparse():
     parser.add_argument('-l', '--layer_step', required=True, type=int,
                     help="defines the layer step")
 
-    parser.add_argument('-d', '--initial_retraction_distance', type=int,
+    parser.add_argument('-d', '--initial_retraction_distance', type=float,
                     help="defines the initial retraction distance")
 
     parser.add_argument('-ds', '--retraction_distance_step', type=float, default=1.0,

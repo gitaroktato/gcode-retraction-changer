@@ -24,23 +24,34 @@ https://www.youtube.com/watch?v=3yIebnVjADM
 
 # Running the code
 
-Changing retraction distance, starting with 0 with and defaulting to an increase of 1.0mm in every 25 layers
+Changing retraction distance, starting with 0 with and defaulting to an increase of 1.0mm in every 25 layers (bowden tube)
 
 ```shell script
 python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0
 ```
 
-Changing retraction distance with a defined step distance, starting with 0 and increasing by 0.5mm in every 25 layers
+Changing retraction distance with a defined step distance, starting with 0 and increasing by 0.5mm in every 25 layers (direct drive)
 
 ```shell script
 python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0 -ds 0.5
 ```
 
-Changing retraction speed from 25mm/s by 5mm/s in every 25 layer.
+Changing retraction distance with a defined step distance, starting with 0.2 and increasing by 0.1mm in every 25 layers (direct drive)
+```shell
+python ./main.py -f ./CE3_stringing_0.4_3_all.gcode -m distance -l 25 -d 0.2 -ds 0.1
+```
+
+Changing retraction speed from 25mm/s by 5mm/s in every 25 layer (bowden tube).
 Note: the given values are in milliseconds, so you have to multiply by 60.
 
 ```shell script
-python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 1500 -t 300
+python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 120 -t 60
+```
+
+Changing retraction speed from 2mm/s by 1mm/s in every 25 layer (direct drive).
+
+```shell script
+python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 120 -t 60
 ```
 
 Specify the layer height you would like to use for changing the retraction distance in the second parameter.
