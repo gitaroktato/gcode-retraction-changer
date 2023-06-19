@@ -12,7 +12,7 @@ The goal is to save material during stringing tets by doing only a single test. 
 The STL file I've used for the custom script:
 https://www.thingiverse.com/thing:2450004
 
-Tested only on Ender 3 and Cura 4.6.1 with my own understanding of [`gcode`](https://marlinfw.org/meta/gcode/) syntax.
+Tested only on Ender 3 and the Cura versions above with my own understanding of [`gcode`](https://marlinfw.org/meta/gcode/) syntax.
 
 # Prerequisites
 
@@ -26,13 +26,13 @@ https://www.youtube.com/watch?v=3yIebnVjADM
 
 Changing retraction distance, starting with 0 with and defaulting to an increase of 1.0mm in every 25 layers (bowden tube)
 
-```shell script
+```shell
 python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0
 ```
 
 Changing retraction distance with a defined step distance, starting with 0 and increasing by 0.5mm in every 25 layers (direct drive)
 
-```shell script
+```shell
 python ./main.py -f GCODE_FILE_NAME -m distance -l 25 -d 0 -ds 0.5
 ```
 
@@ -42,15 +42,15 @@ python ./main.py -f ./CE3_stringing_0.4_3_all.gcode -m distance -l 25 -d 0.2 -ds
 ```
 
 Changing retraction speed from 25mm/s by 5mm/s in every 25 layer (bowden tube).
-Note: the given values are in milliseconds, so you have to multiply by 60.
+**Note:** the given values are in mm/min [in Gcode](https://marlinfw.org/docs/gcode/G000-G001.html), so have to be multiplied by 60.
 
-```shell script
+```shell
 python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 120 -t 60
 ```
 
 Changing retraction speed from 2mm/s by 1mm/s in every 25 layer (direct drive).
 
-```shell script
+```shell
 python ./main.py -f GCODE_FILE_NAME -m speed -l 25 -s 120 -t 60
 ```
 
@@ -70,14 +70,14 @@ I TAKE ABSOLUTELY NO WARRANTY FOR RUINING YOUR PRINTER!
 Let's say I want to do a test with the initial retraction distance of 0 and change it on every 5mm.
 My layer height is 0.2, so I run the following command:
 
-```shell script
+```shell
 python main.py -f tests/CE3_stringing.gcode -m distance -l 25 -d 0
 ```
 
 The script will log out every retraction modification, where it was identifiable in the `.gcode` file.
 In my case this was the following:
 
-```shell script
+```shell
 ...
 LAYER: 33
 RETRACT: 132.03252 changed to 136.03252 with retraction distance 1mm in G1 F2700 E132.03252
@@ -114,7 +114,7 @@ After running the `.gcode` file in my Ender 3 I realized that the ideal setting 
 After figuring out the ideal retraction distance you can even change the retraction speed for a given `.gcode`.
 I've configured the initial retraction speed of 25mm/s and added 5mm/s increase in every 25 layer.
 
-```shell script
+```shell
 python ./main.py -m speed -f tests/CE3_stringing_2mm_at_45mms_original.gcode -l 25 -s 1500 -t 300
 ```
 
