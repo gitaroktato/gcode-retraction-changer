@@ -108,7 +108,7 @@ def change_retraction_distance(gcode_source=None,
             log_layer_line(current_layer_at)
             # We increment retraction distance if required
             if not_initial_layer(current_layer_at) and have_to_change_variable_at_layer(current_layer_at, layer_distance):
-                current_retraction_distance_at += retraction_distance_step
+                current_retraction_distance_at = round(current_retraction_distance_at + retraction_distance_step, 1)
 
         if current_layer_at is not None and currently_extruder_at is not None:
             # Changing the retraction setting derived from the original
@@ -133,7 +133,7 @@ def change_retraction_distance(gcode_source=None,
 
 
 def log_retraction_speed_change(current_retraction_speed_at=None, feed_rate=None, line=None):
-    print(f'RETRACT: Changing speed from {feed_rate} => {current_retraction_speed_at} in line {line}')
+    print(f'RETRACT: Changing speed from {feed_rate} => {current_retraction_speed_at} {current_retraction_speed_at / 60}mm/s in line {line}')
 
 
 def log_retraction_distance_change(new_extruder_at=None,
