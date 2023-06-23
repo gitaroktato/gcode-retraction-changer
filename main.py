@@ -76,13 +76,16 @@ def change_retraction_speed(gcode_source=None,
         if current_layer_at is not None and currently_extruder_at is not None:
             # Changing the retraction setting derived from the original
             if is_changing_only_extruder(line):
-                feed_rate = get_feed_rate(line)
-                log_retraction_speed_change(current_retraction_speed_at=current_retraction_speed_at,
-                                            feed_rate=feed_rate,
-                                            line=line)
-                line = line.replace(str(feed_rate), str(current_retraction_speed_at))
-
-        if is_printing(line):
+                new_extruder_at = get_extruder_position(line)
+                # Check if this is a real retraction
+                if is_not_negative_extrusion(new_extruder_at) and is_retraction(new_extruder_at, currently_extruder_at):
+                    feed_rate = get_feed_rate(line)
+                    log_retraction_speed_change(current_retraction_speed_at=current_retraction_speed_at,
+                                                feed_rate=feed_rate,
+                                                line=line)
+                    line = line.replace(str(feed_rate), str(current_retraction_speed_at))
+        # Skipping speed settings for de-retractions
+        if is_printing(line) or is_changing_only_extruder(line):
             currently_extruder_at = get_extruder_position(line)
 
         gcode_target.writelines(line)
@@ -114,8 +117,8 @@ def change_retraction_distance(gcode_source=None,
             # Changing the retraction setting derived from the original
             if is_changing_only_extruder(line):
                 new_extruder_at = get_extruder_position(line)
-                # Check if this is a real extraction
-                # TODO do we need to change negative extractions?
+                # Check if this is a real retraction
+                # TODO do we need to change negative extrusions?
                 if is_not_negative_extrusion(new_extruder_at) and is_retraction(new_extruder_at, currently_extruder_at):
                     # We recalculate the extrusion value
                     retracted_extruder_at = round(currently_extruder_at - current_retraction_distance_at, 5)
